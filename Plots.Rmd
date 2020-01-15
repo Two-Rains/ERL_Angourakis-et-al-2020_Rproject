@@ -211,6 +211,9 @@ layout(matrix(1:25, nrow = 5, ncol = 5),
 yLabs <- c("Precipitation (mm)", "ETr (mm)", "WATp (%)", "ARID index")
 leftMargin <- 4.1
 
+# x coordinate in barplots has different scale, so must be adjusted with this offset 
+curlyBracesOffset = 1.2 
+
 for (site in levels(factor(weather$Site)))
 {
   if (site != levels(factor(weather$Site))[1])
@@ -236,7 +239,8 @@ for (site in levels(factor(weather$Site)))
 
   barplot(tempData$RAIN, 
           ylab = yLabs[1])
-  CurlyBraces(x0 = lastDayOfWinter + 1,  x1 = lastDayOfSummer,  
+  CurlyBraces(x0 = (lastDayOfWinter + 1) * curlyBracesOffset,  
+              x1 = lastDayOfSummer * curlyBracesOffset,  
               y0 = 1.1 * max(tempData$RAIN), y1 = 1.1 * max(tempData$RAIN), 
               position = 3, 
               bracesSize = 0.15 * max(tempData$RAIN),
@@ -245,7 +249,8 @@ for (site in levels(factor(weather$Site)))
                                                  precipitationSums$year == selectedYear], 
                 " mm (summer)"),
               labelSize = 1, labelDist = 1.1)
-  CurlyBraces(x0 = 1,  x1 = lastDayOfWinter,  
+  CurlyBraces(x0 = 1 * curlyBracesOffset,  
+              x1 = lastDayOfWinter * curlyBracesOffset,  
               y0 = -0.1 * max(tempData$RAIN), y1 = -0.1 * max(tempData$RAIN), 
               position = 1, 
               bracesSize = 0.15 * max(tempData$RAIN),
@@ -254,8 +259,9 @@ for (site in levels(factor(weather$Site)))
                                                  precipitationSums$year == selectedYear], 
                 " mm (winter)"),
               labelSize = 1, labelDist = 1, labelAdj = 0)
-  CurlyBraces(x0 = lastDayOfSummer + 1,  x1 = 425, 
-              # not sure why, but x1 coordinate must be higher than 365 to cover the rest of the axis 
+  CurlyBraces(x0 = (lastDayOfSummer + 1) * curlyBracesOffset, 
+              x1 = 365 * curlyBracesOffset, 
+              # x1 coordinate must be higher than 365 to cover the rest of the axis 
               y0 = -0.1 * max(tempData$RAIN), y1 = -0.1 * max(tempData$RAIN), 
               position = 1, 
               bracesSize = 0.15 * max(tempData$RAIN))
