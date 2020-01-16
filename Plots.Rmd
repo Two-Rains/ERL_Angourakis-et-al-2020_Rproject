@@ -18,6 +18,10 @@ Using:
 
 Model description in p. 24-28, R code example in p. 116-122. Another, possibly newer version of the R code can be found at: https://github.com/cran/ZeBook/blob/master/R/watbal.model.r
 
+Original model from:
+
+>Woli P, Jones J W, Ingram K T and Fraisse C W (2012) 'Agricultural Reference Index for Drought (ARID)' Agron. J. 104-287. Online: https://www.agronomy.org/publications/aj/abstracts/104/2/287
+
 Load functions from 'Soil Water Balance model' library file:
 
 ```{r}
