@@ -423,8 +423,8 @@ plot(1:nrow(simExample), simExample$wheat_biomass, type = "l",
      xlab = "day\n", col = "darkred", lwd = 2,
      ylab = expression(paste("Biomass (", g/m^-2, ")")))
 lines(1:nrow(simExample), simExample$rice_biomass, col = "darkblue", lwd = 2)
-lines(cropYields$wheatHarvestDays, cropYields$wheat, col = "darkred", lwd = 2, lty = 3)
-lines(cropYields$riceHarvestDays, cropYields$rice, col = "darkblue", lwd = 2, lty = 3)
+lines(cropYields$wheatHarvestDays, cropYields$wheat, col = "darkred", lwd = 2, lty = 3, pch = 4, cex = 3, type = "o")
+lines(cropYields$riceHarvestDays, cropYields$rice, col = "darkblue", lwd = 2, lty = 3, pch = 4, cex = 3, type = "o")
 markEndYears(nrow(simExample))
 
 # 8. Legend (crops)
@@ -547,8 +547,10 @@ par(cex = grScale * 1.2, family = "serif",
 plot(c(1, 100), c(0, 1), type = "n", 
      main = "Peristera-Kostaki equation",
      xlab = "AGE\n",
-     ylab = "p(x)"
+     ylab = ""
 )
+mtext(text = "Probability of event\n(giving birth, marrying)", 
+      side = 2, line = 2, cex = grScale * 1.2)
 
 # five variations of parameter settings
 parValues <- rbind(
@@ -581,7 +583,7 @@ for (i in 1:nrow(parValues))
 plot(c(1, 151), c(0, 1), type = "n", 
      main = "Coale-Demeny Model Life Tables",
      xlab = "AGE\n",
-     ylab = "q(x)",
+     ylab = "Probability of dying",
      xlim = c(0, 100)
 )
 
