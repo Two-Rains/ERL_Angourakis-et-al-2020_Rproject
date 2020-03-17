@@ -1,4 +1,4 @@
-![](https://zenodo.org/badge/246005022.svg)
+[![](https://zenodo.org/badge/DOI/10.5281/zenodo.3713442.svg)](http://doi.org/10.5281/zenodo.3712151)
 # ERL_Angourakis-et-al-2020_Rproject
 RStudio project and files associated with Figures 3, 6, and 9 of the manuscript:
 
