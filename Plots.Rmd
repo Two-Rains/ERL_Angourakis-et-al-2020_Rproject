@@ -600,14 +600,14 @@ png("Fig7_input/Fig7_legend_elev.PNG",
     width = terrainDim, 
     height = bottomHeight)
 
-par(mar = c(3,2,1,2), cex = figScale * 2)
+par(mar = c(2,2,1,2), cex = figScale * 2)
 
 barplot(rep(100, 6), 
         col = rgb(elev - (100/255), elev, 0), 
         axes = FALSE)
 mtext("min.", side = 1, line = 0.1, adj = 0, cex = figScale * 2)
 mtext("max.", side = 1, line = 0.1, adj = 1, cex = figScale * 2)
-mtext("elevation", side = 1, line = 1.2, adj = .5, cex = figScale * 3)
+#mtext("elevation", side = 1, line = 1.2, adj = .5, cex = figScale * 3)
 
 dev.off()
 
