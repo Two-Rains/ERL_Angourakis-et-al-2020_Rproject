@@ -617,9 +617,9 @@ soilTextureTypes <- c("Sandy loam", "Loam",
 soilTextureTypes_colors <- c("#9d6e48", "#eded31", 
                              "#a71b6a", "#345da9",
                              "#7c50a4", "#2d8dbe")
-xy <- list(c(0, 1),    c(0.6,  1), 
-           c(0, 0.7), c(0.6, 0.7),  
-           c(0, 0.4), c(0.6, 0.4))
+xy <- list(c(-0.1, 1),   c(0.55,  1), 
+           c(-0.1, 0.7), c(0.55, 0.7),  
+           c(-0.1, 0.4), c(0.55, 0.4))
 
 png("Fig7_input/Fig7_legend_soil.PNG", 
     width = terrainDim, 
@@ -634,7 +634,8 @@ for (i in 1:length(soilTextureTypes))
   legend(xy[[i]][1], xy[[i]][2], 
          legend = soilTextureTypes[i], 
          fill = soilTextureTypes_colors[i], 
-         bty = "n", cex = figScale * 2, pt.cex = figScale * 5)
+         bty = "n",  adj = 0.1,
+         cex = figScale * 2.5, pt.cex = figScale * 5)
 }
 
 dev.off()
@@ -643,8 +644,8 @@ ecologicalCommunityTypes <- c("grassland", "wood-grass",
                               "shrubland", "woodland")
 ecologicalCommunityTypes_colors <- c("#f16a15", "#eded31",
                                      "#59b03c", "#1d9f78")
-xy <- list(c(0.1, 0.95), c(0.5, 0.95), 
-           c(0.1, 0.5),  c(0.5, 0.5))
+xy <- list(c(0, 0.95), c(0.45, 0.95), 
+           c(0, 0.5),  c(0.45, 0.5))
 
 png("Fig7_input/Fig7_legend_ecol.PNG", 
     width = terrainDim, 
@@ -654,16 +655,13 @@ par(mar = rep(0, 4))
 
 plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
 
-for (x in 0:1)
+for (i in 1:length(ecologicalCommunityTypes))
 {
-  for (y in 0:1)
-  {
-    i = 1 + x + y * 2
-    legend(xy[[i]][1], xy[[i]][2], 
-           legend = ecologicalCommunityTypes[i], 
-           fill = ecologicalCommunityTypes_colors[i], 
-       bty = "n", cex = figScale * 2, pt.cex = figScale * 5)
-  }
+  legend(xy[[i]][1], xy[[i]][2], 
+         legend = ecologicalCommunityTypes[i], 
+         fill = ecologicalCommunityTypes_colors[i], 
+         bty = "n", adj = 0.1,
+         cex = figScale * 2.5, pt.cex = figScale * 5)
 }
 
 dev.off()
