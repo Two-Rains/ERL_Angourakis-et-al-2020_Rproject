@@ -10,7 +10,7 @@ output:
 
 This file and all other referenced in the code can be found at the repository: [https://github.com/Andros-Spica/ERL_Angourakis-et-al-2020_Rproject](https://github.com/Andros-Spica/ERL_Angourakis-et-al-2020_Rproject)
 
-## Figure 3. Daily precipitation and seasonal totals (mm) for <year> on the location of the five major Indus urban centres.
+## Figure 3. Daily precipitation and seasonal totals (mm) for <year> on the location of the five major Indus urban centres
 
 Using:
 
@@ -774,3 +774,32 @@ dev.off()
 ```{r}
 knitr::include_graphics("Fig7.png")
 ```
+
+
+```{r}
+terrainsData <- read.csv(
+    paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", listOfSeeds[1] ,".csv"), skip = 8, nrows = 1)
+
+for (i in 2:length(listOfSeeds))
+{
+  terrainsData <- rbind(terrainsData, 
+                        read.csv(
+    paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", listOfSeeds[i] ,".csv"), skip = 8, nrows = 1))
+}
+  
+terrainsData <- as.data.frame(t(terrainsData[, c(89, 18:39, 
+                                 94, 96, 99:102, 104:107, 111,
+                                 11:16)]))
+#names(terrainsData) <- listOfSeeds
+```
+
+Show table with parameter values:
+
+```{r}
+knitr::kable(terrainsData, 
+             format = "html",
+             col.names = rep("", 4),
+             align = c("l", "c", "c", "c"))
+```
+
+</br></br>
