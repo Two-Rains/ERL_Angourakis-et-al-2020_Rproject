@@ -516,3 +516,263 @@ dev.off()
 ```{r, out.width = "\\textwidth"}
 knitr::include_graphics(plotName)
 ```
+
+## Figure 7. Example of simulated terrains
+
+Load packages:
+
+```{r}
+library(grid)
+library(gridExtra)
+library(png)
+```
+
+Defining terrain random number generator seed (must be available inside "terrains" folder:
+
+```{r}
+listOfSeeds <- c(32, 298, 304, 499)
+```
+
+Setting dimensions:
+
+```{r}
+figScale = 2
+terrainDim = 450 * figScale
+topHeight = 100 * figScale
+bottomHeight = 150 * figScale
+leftWidth = 100 * figScale
+internalMargin = 5 * figScale
+figWidth = terrainDim * 3 + leftWidth + 2 * internalMargin
+figHeight = terrainDim * 4 + topHeight + bottomHeight + 3 * internalMargin
+```
+
+Create margin header images:
+
+```{r}
+headers <- c("seed",
+             "Elevation", 
+             "Soil texture type",
+             "Ecological community\n(cover type)")
+namesInFile <- c("seed", "elev", "soil", "ecol")
+
+for (i in 1:length(headers))
+{
+  if (i == 1) { width = leftWidth } else { width = terrainDim }
+  
+  png(paste0("Fig7_input/Fig7_", namesInFile[i], ".PNG"), 
+    width = width, 
+    height = topHeight)
+
+  par(mar = rep(0, 4))
+
+  plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+  
+  text(0.5, 0.5, cex = figScale * 3.7,
+       labels = headers[i])
+  
+  dev.off()
+}
+
+for (seed in listOfSeeds)
+{
+  png(paste0("Fig7_input/Fig7_seed=", seed, ".PNG"), 
+    width = leftWidth, 
+    height = terrainDim)
+
+  par(mar = rep(0, 4))
+
+  plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+  
+  text(0.5, 0.5, cex = figScale * 5, adj = .5,
+       labels = seed)
+  
+  dev.off()
+}
+```
+
+Create legend images:
+
+```{r, eval=FALSE}
+# code converted from NetLogo (maximum = 255)
+elev <- 100/255 + (155/255) * seq(0, 1, length.out = 6)
+
+png("Fig7_input/Fig7_legend_elev.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = c(3,2,1,2), cex = figScale * 2)
+
+barplot(rep(100, 6), 
+        col = rgb(elev - (100/255), elev, 0), 
+        axes = FALSE)
+mtext("min.", side = 1, line = 0.1, adj = 0, cex = figScale * 2)
+mtext("max.", side = 1, line = 0.1, adj = 1, cex = figScale * 2)
+mtext("elevation", side = 1, line = 1.2, adj = .5, cex = figScale * 3)
+
+dev.off()
+
+soilTextureTypes <- c("Sandy loam", "Loam", 
+                      "Sandy clay loam", "Clay loam", 
+                      "Sandy clay", "Clay")
+soilTextureTypes_colors <- c("#9d6e48", "#eded31", 
+                             "#a71b6a", "#345da9",
+                             "#7c50a4", "#2d8dbe")
+xy <- list(c(0, 1),    c(0.6,  1), 
+           c(0, 0.7), c(0.6, 0.7),  
+           c(0, 0.4), c(0.6, 0.4))
+
+png("Fig7_input/Fig7_legend_soil.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = rep(0, 4))
+
+plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+
+for (i in 1:length(soilTextureTypes))
+{
+  legend(xy[[i]][1], xy[[i]][2], 
+         legend = soilTextureTypes[i], 
+         fill = soilTextureTypes_colors[i], 
+         bty = "n", cex = figScale * 2, pt.cex = figScale * 5)
+}
+
+dev.off()
+
+ecologicalCommunityTypes <- c("grassland", "wood-grass",
+                              "shrubland", "woodland")
+ecologicalCommunityTypes_colors <- c("#f16a15", "#eded31",
+                                     "#59b03c", "#1d9f78")
+xy <- list(c(0.1, 0.95), c(0.5, 0.95), 
+           c(0.1, 0.5),  c(0.5, 0.5))
+
+png("Fig7_input/Fig7_legend_ecol.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = rep(0, 4))
+
+plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+
+for (x in 0:1)
+{
+  for (y in 0:1)
+  {
+    i = 1 + x + y * 2
+    legend(xy[[i]][1], xy[[i]][2], 
+           legend = ecologicalCommunityTypes[i], 
+           fill = ecologicalCommunityTypes_colors[i], 
+       bty = "n", cex = figScale * 2, pt.cex = figScale * 5)
+  }
+}
+
+dev.off()
+```
+
+Create blank image:
+
+```{r}
+png("Fig7_input/Fig7_blank.PNG", 
+    width = 10, 
+    height = 10)
+
+dev.off()
+```
+
+Load input images:
+
+```{r}
+elevTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,".PNG")
+soilTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,"_soilTextureTypes.PNG")
+ecolTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,"_coverTypes.PNG")
+
+# it is important that these plots were saved as "PNG not "png"
+listOfPlots <- c("Fig7_input/Fig7_seed.PNG",
+                 "Fig7_input/Fig7_elev.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_soil.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_ecol.PNG",
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[1], ".PNG"),
+                 elevTerrains[1],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[1],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[1],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[2], ".PNG"),
+                 elevTerrains[2],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[2],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[2],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[3], ".PNG"),
+                 elevTerrains[3],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[3],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[3],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[4], ".PNG"),
+                 elevTerrains[4],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[4],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[4],
+                 # ---
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_elev.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_soil.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_ecol.PNG"
+                 )
+
+grobs <- lapply(lapply(listOfPlots, png::readPNG), grid::rasterGrob)
+```
+
+Create Figure 7:
+
+```{r}
+widths = 50 * c(leftWidth/figWidth,
+                terrainDim/figWidth,
+                internalMargin/figWidth,
+                terrainDim/figWidth,
+                internalMargin/figWidth,
+                terrainDim/figWidth) * figScale
+heights = (figHeight/figWidth) * 50 * c(topHeight/figHeight, 
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        bottomHeight/figHeight) * figScale
+
+lay <- rbind(1:6, 7:12, 13:18, 19:24, 25:30, 31:36, 37:42, 43:48, 49:54)
+
+png("Fig7.png", width = figWidth, height = figHeight)
+
+gridExtra::grid.arrange(grobs = grobs, 
+                        layout_matrix = lay,
+                        widths = unit(widths, "cm"),
+                        heights = unit(heights, "cm"))
+
+dev.off()
+```
+
+```{r}
+knitr::include_graphics("Fig7.png")
+```
