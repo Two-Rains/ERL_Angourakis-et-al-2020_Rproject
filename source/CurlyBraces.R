@@ -53,5 +53,5 @@ CurlyBraces <- function(x0,
   lines(x_sequence, y_sequence, lwd = 1.5, xpd = NA)
   
   if (!is.null(label))
-    mtext(text = label, side = position, line = labelDist, cex = labelSize, adj = )
+    mtext(text = label, side = position, line = labelDist, cex = labelSize, adj = labelAdj)
 }

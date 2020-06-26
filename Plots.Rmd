@@ -433,8 +433,10 @@ png(plotName, width = 1000, height = 1200)
 #                       colormodel = "cmyk")
 #---------
 
-layout(matrix(1:8, nrow = 8, ncol = 1), 
-       heights = c(1, 1, 1, 1, 1, 1, 1.3, 0.2))
+layout(matrix(c(1:8, rep(9, 4), rep(10, 2), 11, 12), 
+              nrow = 8, ncol = 2), 
+       heights = c(1, 1, 1, 1, 1, 1, 1.3, 0.2),
+       widths = c(1, 0.15))
 
 yLabs <- c(expression(paste("Solar Radiation (", MJ/m^-2, ")")), 
            "Temperature (ºC)", 
@@ -455,6 +457,7 @@ markEndYears(nrow(simExample))
 plot(1:nrow(simExample), simExample$"T", type = "l",
      xlab = "", xaxt = 'n',
      ylab = yLabs[2])
+#lines(1:nrow(simExample), simExample$)
 markEndYears(nrow(simExample))
 
 # 3. Precipitation
@@ -509,6 +512,51 @@ legend(x = 0.25, y = 0.99,
        legend = c('Triticum aestivum (Yecora Rojo)', 'Oryza sativa (IR72)'),
        col = c('darkred', 'darkblue'), lty = c(1, 1), lwd = 2,
        horiz = T, bty = "n")
+
+# 9. Weather model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
+
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = -0.02, y1 = 1.01, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Weather\n",
+            labelSize = 3)
+mtext(text = "sub-model", 
+      side = 4, line = -.1, cex = 2)
+
+# 10. Soil Water Balance model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
+
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = -0.02, y1 = 1, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Soil Water Balance\n",
+            labelSize = 3)
+mtext(text = "sub-model", 
+      side = 4, line = -.1, cex = 2)
+
+# 11. Crop model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
+
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = 0.1, y1 = 1, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Crop\n",
+            labelSize = 3)
+mtext(text = "sub-model", 
+      side = 4, line = -.1, cex = 2)
+
+# 12. empty
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
 dev.off()
 ```
