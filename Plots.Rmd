@@ -4,13 +4,13 @@ title: Plots produced for How to downsize a complex society (Environmental
 author: "Andreas Angourakis"
 date: "15 January 2020"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 This file and all other referenced in the code can be found at the repository: [https://github.com/Andros-Spica/ERL_Angourakis-et-al-2020_Rproject](https://github.com/Andros-Spica/ERL_Angourakis-et-al-2020_Rproject)
 
-## Figure 3. Daily precipitation and seasonal totals (mm) for <year> on the location of the five major Indus urban centres.
+## Figure 3. Daily precipitation and seasonal totals (mm) for <year> on the location of the five major Indus urban centres
 
 Using:
 
@@ -333,6 +333,19 @@ simExample <- read.csv("Fig6_input/SIMPLE-crop-model experiment-table.csv", skip
 wheatHarvestDay = simExample$"item.0.sugHarvestingDay"[1]
 riceHarvestDay = simExample$"item.1.sugHarvestingDay"[1]
 
+simExample_pars <- simExample[1, c(
+  "solar_annual.min", "solar_annual.max", "solar_daily.mean.fluctuation",
+  "temperature_annual.min.at.2m", "temperature_annual.max.at.2m",
+  "temperature_daily.mean.fluctuation",
+  "temperature_daily.lower.deviation",	"temperature_daily.upper.deviation",
+  "precipitation_yearly.mean", "precipitation_yearly.sd",
+  "precipitation_daily.cum_plateau.value_yearly.mean",
+  "precipitation_daily.cum_inflection1_yearly.mean", "precipitation_daily.cum_inflection1_yearly.sd",
+  "precipitation_daily.cum_rate1_yearly.mean",	"precipitation_daily.cum_rate1_yearly.sd",
+  "precipitation_daily.cum_plateau.value_yearly.sd", "precipitation_daily.cum_max.sample.size",
+  "precipitation_daily.cum_inflection2_yearly.mean", "precipitation_daily.cum_inflection2_yearly.sd",
+  "precipitation_daily.cum_rate2_yearly.mean",	"precipitation_daily.cum_rate2_yearly.sd",						"precipitation_daily.cum_n.sample"
+)]
 
 simExample <- simExample[, c(
   "X.step.", "T", "RAIN", "solarRadiation", "ET_0", 
@@ -349,7 +362,7 @@ names(simExample) <- c(
   "wheat_biomass", "rice_biomass", "wheat_yield", "rice_yield"
   )
 
-# create vector with harves yields per crop and year
+# create vector with harvest yields per crop and year
 
 years <- 1:floor(nrow(simExample) / 365) - 1
 
@@ -360,6 +373,23 @@ cropYields <- data.frame(
   rice = unique(simExample$rice_yield)[-1])
 cropYields$wheat[1] <- NA # ignore first zero yield in wheat
 ```
+
+Show table with parameter values:
+
+```{r}
+parvalues <- c()
+for (i in 1:length(simExample_pars))
+{
+    parvalues <- c(parvalues, simExample_pars[[i]])
+}
+parvalues <- cbind(names(simExample_pars), parvalues)
+knitr::kable(parvalues, 
+             format = "html",
+             col.names = c("parameter", "values"),
+             align = c("l", "r"))
+```
+
+<br/>
 
 Load function for marking the end of each year:
 
@@ -382,14 +412,16 @@ Plot all selected variables:
 # To create a png file:
 plotName = "Fig6.png"
 
-fontScale = c(1.5, 1.2) # c(cex.lab, legend)
+fontScale = c(2, 2, 1.2, # c(cex.lab, legend, cex.axis)
+              3, 2) # side annotation name and "model"
 
 png(plotName, width = 1000, height = 1200)
 #---------
 # alternatively, to create eps file:
 # plotName = "Fig6.eps"
 # 
-# fontScale = c(1.3, 1)
+# fontScale = c(1.8, 1.8, 1.2, # c(cex.lab, legend, cex.axis)
+#               2.8, 1.8) # side annotation name and "model"
 # 
 # extrafont::loadfonts(device = "postscript")
 # grDevices::postscript(file = plotName,
@@ -403,18 +435,22 @@ png(plotName, width = 1000, height = 1200)
 #                       colormodel = "cmyk")
 #---------
 
-layout(matrix(1:8, nrow = 8, ncol = 1), 
-       heights = c(1, 1, 1, 1, 1, 1, 1.3, 0.2))
+layout(matrix(c(1:8, rep(9, 4), rep(10, 2), 11, 12), 
+              nrow = 8, ncol = 2), 
+       heights = c(1, 1, 1, 1, 1, 1, 1.3, 0.26),
+       widths = c(1, 0.15))
 
-yLabs <- c(expression(paste("Solar Radiation (", MJ/m^-2, ")")), 
+yLabs <- c(expression(paste("    Solar\nRadiation (", MJ/m^-2, ")")), 
            "Temperature (ºC)", 
            "Precipitation (mm)", 
            "ETr (mm)", "WATp (%)", "ARID index")
-leftMargin <- 5.1
+leftMargin <- 7
 
 
 # 1. Solar radiation
-par(mar = c(0.1, leftMargin, 1.1, 0.2), cex.lab = fontScale[1])
+par(mar = c(0.1, leftMargin, 1.1, 0.2), 
+    cex.lab = fontScale[1],
+    cex.axis = fontScale[3])
 
 plot(1:nrow(simExample), simExample$solarRadiation, type = "l",
      xlab = "", xaxt = 'n',
@@ -425,6 +461,7 @@ markEndYears(nrow(simExample))
 plot(1:nrow(simExample), simExample$"T", type = "l",
      xlab = "", xaxt = 'n',
      ylab = yLabs[2])
+#lines(1:nrow(simExample), simExample$)
 markEndYears(nrow(simExample))
 
 # 3. Precipitation
@@ -451,6 +488,10 @@ plot(1:nrow(simExample), simExample$WATp * 100,
 abline(h = soil.FC * 100, lty = 2)
 abline(h = soil.WP * 100, lty = 2)
 markEndYears(nrow(simExample))
+text(x = 2000, y = 17.5, labels = "field capacity", 
+     cex = fontScale[1], font = 3)
+text(x = 2000, y = 4.5, labels = "wilting point", 
+     cex = fontScale[1], font = 3)
 
 # 6. ARID index
 plot(1:nrow(simExample), simExample$ARID, 
@@ -463,217 +504,81 @@ markEndYears(nrow(simExample))
 par(mar = c(3.5, leftMargin, 1.1, 0.2))
 
 plot(1:nrow(simExample), simExample$wheat_biomass, type = "l",
-     xlab = "day\n", col = "darkred", lwd = 2,
+     xlab = "", col = "darkred", lwd = 2,
      ylab = expression(paste("Biomass (", g/m^-2, ")")))
 lines(1:nrow(simExample), simExample$rice_biomass, col = "darkblue", lwd = 2)
 lines(cropYields$wheatHarvestDays, cropYields$wheat, col = "darkred", lwd = 2, lty = 3, pch = 4, cex = 3, type = "o")
 lines(cropYields$riceHarvestDays, cropYields$rice, col = "darkblue", lwd = 2, lty = 3, pch = 4, cex = 3, type = "o")
 markEndYears(nrow(simExample))
 
+text(x = 2050, y = 700, labels = "harvested", 
+     cex = fontScale[1], font = 3)
+
+arrows(x0 = 2050, x1 = 1950, y0 = 620, y1 = 450, length = 0.1, lwd = 2)
+
+mtext("day", side = 1, line = 3, cex = fontScale[3])
+
+CurlyBraces(x0 = 0.02, x1 = 364.08, 
+            y0 = -100, y1 = -100, 
+            position = 1, 
+            bracesSize = 100)
+mtext("year (365 days)", side = 1, line = 3, 
+      cex = fontScale[3], adj = 0.06, font = 3)
+
 # 8. Legend (crops)
 par(mar = c(0,0,0,0), cex = fontScale[2])
 
 plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
-legend(x = 0.25, y = 0.99, 
+legend(x = 0.05, y = 1.1, 
        legend = c('Triticum aestivum (Yecora Rojo)', 'Oryza sativa (IR72)'),
        col = c('darkred', 'darkblue'), lty = c(1, 1), lwd = 2,
        horiz = T, bty = "n")
 
-dev.off()
-```
+# 9. Weather model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
 
-```{r, out.width = "\\textwidth"}
-knitr::include_graphics(plotName)
-```
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
-## Figure 9. Example of response of the three life table models to parameter variation
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = -0.02, y1 = 1.01, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Weather\n",
+            labelSize = fontScale[4])
+mtext(text = "model", 
+      side = 4, line = 0.33, cex = fontScale[5])
 
-Load functions that create/import Life Table models for fertility and nuptiality (Peristera-Kostaki model), and mortality (Coale-Demeny model):
+# 10. Soil Water Balance model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
 
-```{r}
-### fertility
-# The following correspond to the first parametric model
-# mentioned in page 147 of:
-# # Peristeva and Kostaki, 2009
-# "Modeling fertility in modern populations"
-# Available from: https://dx.doi.org/10.4054/DemRes.2007.16.6
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
-### nuptiality
-# The following correspond to the first parametric model
-# for fitting the age-specific distributions of marriages, mentioned in page 133 of:
-# # Peristeva and Kostaki, 2015
-# "A parametric model for estimating nuptiality patterns in modern populations"
-# Available from: https://www.researchgate.net/publication/285457704_A_parametric_model_for_estimating_nuptiality_patterns_in_modern_populations [accessed Nov 27 2018].
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = -0.02, y1 = 1, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Soil Water Balance\n",
+            labelSize = fontScale[4])
+mtext(text = "model", 
+      side = 4, line = 0.33, cex = fontScale[5])
 
-# the equation is the same for both fertility and nuptiality.
+# 11. Crop model bracket
+par(mar = c(0,0,0,2), cex = fontScale[2])
 
-generatePeristeraKostaki <- function(par.c1 = 0.8, par.mu = 25, par.sigma = c(10, 10) )
-{
-  curve <- c()
-  for (i in 1:100)
-  {
-    sigma = par.sigma[1]
-    if (i > par.mu)
-    { sigma = par.sigma[2] }
-    
-    curve <- c(curve, par.c1 * exp (-1 * (((i - par.mu) / sigma) ^ 2)) )
-  }
-  
-  return(curve)
-}
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
-### mortality
-# from Coale-Demeny Model Life Tables generated with 'demoR' package
-# demoR package version 0.6.0 (2018-09-13)
-# by James Holland Jones and collaborators
-# Their source:
-# Coale, A., P. Demeny, and B. Vaughn. 1983. 
-# Regional model life tables and stable populations. 
-# 2nd ed. New York: Academic Press.
+CurlyBraces(x0 = 0.01, x1 = 0.01, 
+            y0 = 0.1, y1 = 1, 
+            position = 4, 
+            bracesSize = 0.66,
+            label = "Crop\n",
+            labelSize = fontScale[4])
+mtext(text = "model", 
+      side = 4, line = 0.33, cex = fontScale[5])
 
-interpolatePerYear <- function(raw, ages = c(0.5, 1.5, 4, seq(8.5, 93.5, 5))) {
-  
-  perYear <- data.frame(matrix(numeric(0), nrow = 151, ncol = ncol(raw)))
-  names(perYear) <- 1:ncol(perYear)
-  
-  for (i in 1:ncol(raw)) {
-    perYear[, i] <- approx(ages, raw[, i], 
-                           xout = 1:151, yleft = 0, yright = 1)$y
-  }
-  row.names(perYear) <- 0:150
-  
-  return(perYear)
-}
-
-generateCoaleDemenyLifeTable <- function(region = "north", sex = "F", level = 8){
-  
-  curve <- 0
-  
-  if (region == "north")
-  {
-    curve <- interpolatePerYear(t(demogR::cdmltn(sex = sex)$nqx))[,level]
-  }
-  if (region == "west")
-  {
-    curve <- interpolatePerYear(t(demogR::cdmltw(sex = sex)$nqx))[,level]
-  }
-  if (region == "east")
-  {
-    curve <- interpolatePerYear(t(demogR::cdmlte(sex = sex)$nqx))[,level]
-  }
-  if (region == "south")
-  {
-    curve <- interpolatePerYear(t(demogR::cdmlts(sex = sex)$nqx))[,level]
-  }
-  
-  return(curve)
-}
-```
-
-Plot the curves generated by small explorations of the parameter space of each model: 
-
-```{r}
-#--------
-# To create a png file:
-plotName = "Fig9.png"
-
-grScale = 2
-
-png(plotName, width = grScale * 600, height = grScale * 600)
-#---------
-# alternatively, to create eps file:
-# plotName = "Fig9.eps"
-# 
-# grScale = 1.8
-# 
-# extrafont::loadfonts(device = "postscript")
-# grDevices::postscript(file = plotName,
-#                       pointsize = 10,
-#                       width = grScale * 6,
-#                       height = grScale * 6,
-#                       horizontal = FALSE,
-#                       paper = "special",
-#                       onefile = FALSE,
-#                       family = "sans",
-#                       colormodel = "cmyk")
-#---------
-
-layout(matrix(1:2, nrow = 2, ncol = 1))
-
-par(cex = grScale * 1.2, family = "sans",
-    mar = c(3.5, 4.1, 1.1, 0.2))
-
-# 1. Peristera-Kostaki equation (Fertility and Nuptiality models)
-
-plot(c(1, 100), c(0, 1), type = "n", 
-     main = "Peristera-Kostaki equation",
-     xlab = "AGE\n",
-     ylab = ""
-)
-mtext(text = "Probability of event\n(giving birth, marrying)", 
-      side = 2, line = 2, cex = grScale * 1.2)
-
-# five variations of parameter settings
-parValues <- rbind(
-  c(0.8, 25, 10, 10),
-  c(0.95, 20, 5, 7),
-  c(0.7, 25, 12, 15),
-  c(0.85, 18, 2, 15),
-  c(0.75, 22, 8, 10)
-)
-
-for (i in 1:nrow(parValues))
-{
-  lines(1:100, 
-        generatePeristeraKostaki(par.c1 = parValues[i, 1], par.mu = parValues[i, 2], 
-                                 par.sigma = c(parValues[i, 3], parValues[i, 4])), 
-        col = i, lwd = grScale * 3)
-  
-  legend(60, 1 - 0.1 * (i - 1), 
-       legend = substitute(paste(c[1], " = ", pc1, ", ", mu, " = ", pmu, ", ",
-                                 sigma[1], " = ", ps1, ", ", sigma[2], " = ", ps2), 
-                           list(pc1 = parValues[i, 1], pmu = parValues[i, 2],
-                                ps1 = parValues[i, 3], ps2 = parValues[i, 4])), 
-       col = i,
-       lwd = grScale * 3, cex = 0.8,
-       title = NULL, bty = "n")
-}
-
-# 2. Mortality model (CoaleDemeny Life tables)
-
-plot(c(1, 151), c(0, 1), type = "n", 
-     main = "Coale-Demeny Model Life Tables",
-     xlab = "AGE\n",
-     ylab = "Probability of dying",
-     xlim = c(0, 100)
-)
-
-# five variations of parameter settings
-parValues <- rbind(
-  c("north", "M", 1),
-  c("west", "F", 8),
-  c("east", "M", 12),
-  c("south", "F", 17),
-  c("north", "F", 25)
-)
-
-for (i in 1:nrow(parValues))
-{
-  lines(1:151, 
-        generateCoaleDemenyLifeTable(region = parValues[i, 1], 
-                                     sex = parValues[i, 2], 
-                                     level = parValues[i, 3]), 
-        col = i, lwd = grScale * 3)
-  
-  legend(1, 1 - 0.1 * (i - 1), 
-       legend = paste("region = ", parValues[i, 1], ", ", 
-                      "sex = ", parValues[i, 2], ", ",
-                      "level = ", parValues[i, 3]),
-       col = i, text.font = 3,
-       lwd = grScale * 3, cex = 0.8,
-       title = NULL, bty = "n")
-}
+# 12. empty
+plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
 
 dev.off()
 ```
@@ -681,3 +586,290 @@ dev.off()
 ```{r, out.width = "\\textwidth"}
 knitr::include_graphics(plotName)
 ```
+
+## Figure 7. Example of simulated terrains
+
+Load packages:
+
+```{r}
+library(grid)
+library(gridExtra)
+library(png)
+```
+
+Defining terrain random number generator seed (must be available inside "terrains" folder:
+
+```{r}
+listOfSeeds <- c(32, 298, 304, 499)
+```
+
+Setting dimensions:
+
+```{r}
+figScale = 2
+terrainDim = 450 * figScale
+topHeight = 100 * figScale
+bottomHeight = 150 * figScale
+leftWidth = 100 * figScale
+internalMargin = 5 * figScale
+figWidth = terrainDim * 3 + leftWidth + 2 * internalMargin
+figHeight = terrainDim * 4 + topHeight + bottomHeight + 3 * internalMargin
+```
+
+Create margin header images:
+
+```{r}
+headers <- c("seed",
+             "Elevation", 
+             "Soil texture type",
+             "Ecological community\n(cover type)")
+namesInFile <- c("seed", "elev", "soil", "ecol")
+
+for (i in 1:length(headers))
+{
+  if (i == 1) { width = leftWidth } else { width = terrainDim }
+  
+  png(paste0("Fig7_input/Fig7_", namesInFile[i], ".PNG"), 
+    width = width, 
+    height = topHeight)
+
+  par(mar = rep(0, 4))
+
+  plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+  
+  text(0.5, 0.5, cex = figScale * 3.7,
+       labels = headers[i])
+  
+  dev.off()
+}
+
+for (seed in listOfSeeds)
+{
+  png(paste0("Fig7_input/Fig7_seed=", seed, ".PNG"), 
+    width = leftWidth, 
+    height = terrainDim)
+
+  par(mar = rep(0, 4))
+
+  plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+  
+  text(0.5, 0.5, cex = figScale * 5, adj = .5,
+       labels = seed)
+  
+  dev.off()
+}
+```
+
+Create legend images:
+
+```{r, eval=FALSE}
+# code converted from NetLogo (maximum = 255)
+elev <- 100/255 + (155/255) * seq(0, 1, length.out = 6)
+
+png("Fig7_input/Fig7_legend_elev.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = c(2,2,1,2), cex = figScale * 2)
+
+barplot(rep(100, 6), 
+        col = rgb(elev - (100/255), elev, 0), 
+        axes = FALSE)
+mtext("min.", side = 1, line = 0.1, adj = 0, cex = figScale * 2)
+mtext("max.", side = 1, line = 0.1, adj = 1, cex = figScale * 2)
+#mtext("elevation", side = 1, line = 1.2, adj = .5, cex = figScale * 3)
+
+dev.off()
+
+soilTextureTypes <- c("Sandy loam", "Loam", 
+                      "Sandy clay loam", "Clay loam", 
+                      "Sandy clay", "Clay")
+soilTextureTypes_colors <- c("#9d6e48", "#eded31", 
+                             "#a71b6a", "#345da9",
+                             "#7c50a4", "#2d8dbe")
+xy <- list(c(-0.1, 1),   c(0.55,  1), 
+           c(-0.1, 0.7), c(0.55, 0.7),  
+           c(-0.1, 0.4), c(0.55, 0.4))
+
+png("Fig7_input/Fig7_legend_soil.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = rep(0, 4))
+
+plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+
+for (i in 1:length(soilTextureTypes))
+{
+  legend(xy[[i]][1], xy[[i]][2], 
+         legend = soilTextureTypes[i], 
+         fill = soilTextureTypes_colors[i], 
+         bty = "n",  adj = 0.1,
+         cex = figScale * 2.5, pt.cex = figScale * 5)
+}
+
+dev.off()
+
+ecologicalCommunityTypes <- c("grassland", "wood-grass",
+                              "shrubland", "woodland")
+ecologicalCommunityTypes_colors <- c("#f16a15", "#eded31",
+                                     "#59b03c", "#1d9f78")
+xy <- list(c(0, 0.95), c(0.45, 0.95), 
+           c(0, 0.5),  c(0.45, 0.5))
+
+png("Fig7_input/Fig7_legend_ecol.PNG", 
+    width = terrainDim, 
+    height = bottomHeight)
+
+par(mar = rep(0, 4))
+
+plot(0:1, 0:1, type = "n", axes = FALSE, ann = FALSE)
+
+for (i in 1:length(ecologicalCommunityTypes))
+{
+  legend(xy[[i]][1], xy[[i]][2], 
+         legend = ecologicalCommunityTypes[i], 
+         fill = ecologicalCommunityTypes_colors[i], 
+         bty = "n", adj = 0.1,
+         cex = figScale * 2.5, pt.cex = figScale * 5)
+}
+
+dev.off()
+```
+
+Create blank image:
+
+```{r}
+png("Fig7_input/Fig7_blank.PNG", 
+    width = 10, 
+    height = 10)
+
+dev.off()
+```
+
+Load input images:
+
+```{r}
+elevTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,".PNG")
+soilTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,"_soilTextureTypes.PNG")
+ecolTerrains <- paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", 
+                    listOfSeeds ,"_coverTypes.PNG")
+
+# it is important that these plots were saved as "PNG not "png"
+listOfPlots <- c("Fig7_input/Fig7_seed.PNG",
+                 "Fig7_input/Fig7_elev.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_soil.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_ecol.PNG",
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[1], ".PNG"),
+                 elevTerrains[1],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[1],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[1],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[2], ".PNG"),
+                 elevTerrains[2],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[2],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[2],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[3], ".PNG"),
+                 elevTerrains[3],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[3],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[3],
+                 # ---
+                 rep("Fig7_input/Fig7_blank.PNG", 6),
+                 # ---
+                 paste0("Fig7_input/Fig7_seed=", listOfSeeds[4], ".PNG"),
+                 elevTerrains[4],
+                 "Fig7_input/Fig7_blank.PNG",
+                 soilTerrains[4],
+                 "Fig7_input/Fig7_blank.PNG",
+                 ecolTerrains[4],
+                 # ---
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_elev.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_soil.PNG",
+                 "Fig7_input/Fig7_blank.PNG",
+                 "Fig7_input/Fig7_legend_ecol.PNG"
+                 )
+
+grobs <- lapply(lapply(listOfPlots, png::readPNG), grid::rasterGrob)
+```
+
+Create Figure 7:
+
+```{r}
+widths = 50 * c(leftWidth/figWidth,
+                terrainDim/figWidth,
+                internalMargin/figWidth,
+                terrainDim/figWidth,
+                internalMargin/figWidth,
+                terrainDim/figWidth) * figScale
+heights = (figHeight/figWidth) * 50 * c(topHeight/figHeight, 
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        internalMargin/figHeight,
+                                        terrainDim/figHeight,
+                                        bottomHeight/figHeight) * figScale
+
+lay <- rbind(1:6, 7:12, 13:18, 19:24, 25:30, 31:36, 37:42, 43:48, 49:54)
+
+png("Fig7.png", width = figWidth, height = figHeight)
+
+gridExtra::grid.arrange(grobs = grobs, 
+                        layout_matrix = lay,
+                        widths = unit(widths, "cm"),
+                        heights = unit(heights, "cm"))
+
+dev.off()
+```
+
+```{r}
+knitr::include_graphics("Fig7.png")
+```
+
+
+```{r}
+terrainsData <- read.csv(
+    paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", listOfSeeds[1] ,".csv"), skip = 8, nrows = 1)
+
+for (i in 2:length(listOfSeeds))
+{
+  terrainsData <- rbind(terrainsData, 
+                        read.csv(
+    paste0("Fig7_input/terrains/terrain_random_w=50_h=50_a=C#_fill-sinks=true_seed=", listOfSeeds[i] ,".csv"), skip = 8, nrows = 1))
+}
+  
+terrainsData <- as.data.frame(t(terrainsData[, c(89, 18:39, 
+                                 94, 96, 99:102, 104:107, 111,
+                                 11:16)]))
+#names(terrainsData) <- listOfSeeds
+```
+
+Show table with parameter values:
+
+```{r}
+knitr::kable(terrainsData, 
+             format = "html",
+             col.names = rep("", 4),
+             align = c("l", "c", "c", "c"))
+```
+
+</br></br>
