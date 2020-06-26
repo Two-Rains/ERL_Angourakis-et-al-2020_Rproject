@@ -18,7 +18,8 @@ CurlyBraces <- function(x0,
                         label = NULL,
                         labelDist = 1,
                         labelSize = 1,
-                        labelAdj = 0.5) {
+                        labelAdj = NA) # adj doesn't seem to work in mtext (?), but NA gets it centred
+  {
   a = c(1, 2, 3, 48, 50)    # set flexion point for spline
   b = c(0, .2, .28, .7, .8) # set depth for spline flexion point
   
@@ -53,5 +54,5 @@ CurlyBraces <- function(x0,
   lines(x_sequence, y_sequence, lwd = 1.5, xpd = NA)
   
   if (!is.null(label))
-    mtext(text = label, side = position, line = labelDist, cex = labelSize, adj = labelAdj)
+    mtext(text = label, side = position, line = labelDist, cex = labelSize, adj = )
 }
