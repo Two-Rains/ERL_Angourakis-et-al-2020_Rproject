@@ -307,6 +307,13 @@ for (site in levels(factor(weather$Site)))
      type = "l", lwd = 2, ylim = c(0, soil.FC * 110))
   abline(h = soil.FC * 100, lty = 2)
   abline(h = soil.WP * 100, lty = 2)
+  if (site == levels(factor(weather$Site))[1])
+  {
+    text(x = 5, y = 17.5, labels = "field capacity", 
+         cex = fontScale * 0.8, font = 3, adj = 0)
+    text(x = 5, y = 4.5, labels = "wilting point", 
+         cex = fontScale * 0.8, font = 3, adj = 0)
+  }
   
   par(mar = c(3.5, leftMargin, 1.1, 0.2))
   
