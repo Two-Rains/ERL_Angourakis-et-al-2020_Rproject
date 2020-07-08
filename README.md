@@ -9,7 +9,7 @@ submitted in 2020
 
 Created with R version 3.6.2.
 
-See HTML document at: https://andros-spica.github.io/ERL_Angourakis-et-al-2020_Rproject/
+See HTML document at: https://two-rains.github.io/ERL_Angourakis-et-al-2020_Rproject/
 
 Cite as:
 Andreas Angourakis. (2020, March 16). Two-Rains/ERL_Angourakis-et-al-2020_Rproject: Supplementary files for Angourakis et al. (2020), Environmental Research Letters. Zenodo. http://doi.org/10.5281/zenodo.3712151
